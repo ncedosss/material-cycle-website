@@ -6,6 +6,8 @@ import SustainabilitySection from './components/SustainabilitySection'
 import AboutSection from './components/AboutSection'
 import QuoteSection from './components/QuoteSection'
 import Footer from './components/Footer'
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function App() {
   return (
@@ -18,6 +20,15 @@ export default function App() {
       <AboutSection />
       <QuoteSection />
       <Footer />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="light"
+      />
     </div>
   )
 }

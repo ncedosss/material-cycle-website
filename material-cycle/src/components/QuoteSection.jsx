@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function QuoteSection() {
   const [loading, setLoading] = useState(false);
@@ -44,7 +45,15 @@ export default function QuoteSection() {
       const data = await response.json();
 
       if (data.success) {
-        alert("Consultation request submitted successfully.");
+        toast.success(
+          "Consultation request submitted successfully.",
+          {
+            style: {
+              borderRadius: "16px",
+              border: "1px solid #22c55e"
+            }
+          }
+        );
 
         setFormData({
           fullName: "",
@@ -56,11 +65,13 @@ export default function QuoteSection() {
           message: ""
         });
       } else {
-        alert("Failed to submit request.");
+        toast.error(
+          "Failed to submit request."
+        );
       }
     } catch (error) {
       console.error(error);
-      alert("An error occurred.");
+      toast.error("An error occurred.",error);
     } finally {
       setLoading(false);
     }
