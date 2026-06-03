@@ -26,7 +26,7 @@ app.use((req, res) => {
   res.sendFile(
     path.join(
       __dirname,
-      "../material_cycle/dist/index.html"
+      "../material-cycle/dist/index.html"
     )
   );
 });
