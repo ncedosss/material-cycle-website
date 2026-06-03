@@ -18,7 +18,7 @@ app.use("/api/test", testRoutes);
 
 app.use(
   express.static(
-    path.join(__dirname, "../material_cycle/dist")
+    path.join(__dirname, "../material-cycle/dist")
   )
 );
 
