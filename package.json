@@ -1,5 +1,17 @@
 {
+  "name": "material-cycle-website",
+  "private": true,
+  "scripts": {
+    "start": "node server/server.js"
+  },
   "dependencies": {
-    "nodemailer": "^8.0.10"
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "nodemailer": "^8.0.10",
+    "pg": "^8.21.0",
+    "uuid": "^14.0.0"
   }
 }
