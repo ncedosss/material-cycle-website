@@ -1,4 +1,5 @@
 import { useState } from "react";
+import logo from "../assets/favicon.ico";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -8,17 +9,18 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
 
         {/* Logo */}
-        <div className="flex items-center gap-3">
-          <a href="#home" className="cursor-pointer">
-            <h1 className="font-bold text-lg md:text-xl">
-              Material Cycle
-            </h1>
-
-            <p className="hidden sm:block text-xs text-gray-500">
-              Smart Waste Management
-            </p>
-          </a>
-        </div>
+<div className="flex items-center">
+  <a
+    href="#home"
+    className="flex items-center"
+  >
+    <img
+      src={logo}
+      alt="Material Cycle"
+      className="h-12 md:h-16 w-auto"
+    />
+  </a>
+</div>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
