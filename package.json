@@ -2,7 +2,8 @@
   "name": "material-cycle-website",
   "private": true,
   "scripts": {
-    "start": "node server/server.js"
+    "start": "node server/server.js",
+    "heroku-postbuild": "cd material-cycle && npm install && npm run build"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
