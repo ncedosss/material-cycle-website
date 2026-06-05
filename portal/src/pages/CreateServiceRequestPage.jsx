@@ -323,6 +323,7 @@ const styles = `
 
 export default function CreateServiceRequestPage() {
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
   const declarationDateRef = useRef(null);
   const etaRef = useRef(null);
   const [msdsFile, setMsdsFile] = useState(null);
@@ -392,7 +393,7 @@ export default function CreateServiceRequestPage() {
     const form = new FormData();
     Object.entries(formData).forEach(([key, value]) => form.append(key, value));
     if (msdsFile) form.append("msdsFile", msdsFile);
-    const response = await fetch("http://localhost:5000/api/service-requests", {
+    const response = await fetch(`${API_URL}/api/service-requests`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
       body: form

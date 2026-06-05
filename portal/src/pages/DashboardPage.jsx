@@ -230,6 +230,7 @@ function getStatusClass(status) {
 }
 
 export default function DashboardPage() {
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
   const [summary, setSummary] = useState({
     pendingRequests: 0,
     approvedRequests: 0,
@@ -241,7 +242,7 @@ export default function DashboardPage() {
 
   const loadDashboard = async () => {
     const token = localStorage.getItem("token");
-    const response = await fetch("http://localhost:5000/api/dashboard/summary", {
+    const response = await fetch(`${API_URL}/api/dashboard/summary`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await response.json();

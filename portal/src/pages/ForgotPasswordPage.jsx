@@ -5,6 +5,7 @@ export default function ForgotPasswordPage() {
     const [email, setEmail] = useState("");
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -20,7 +21,7 @@ export default function ForgotPasswordPage() {
 
         const response =
         await fetch(
-            "http://localhost:5000/api/auth/forgot-password",
+            `${API_URL}/api/auth/forgot-password`,
             {
             method: "POST",
             headers: {

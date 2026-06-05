@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 export default function ResetPasswordPage() {
     const { token } = useParams();
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
     const navigate = useNavigate();
 
@@ -27,7 +28,7 @@ export default function ResetPasswordPage() {
 
         const response =
         await fetch(
-            `http://localhost:5000/api/auth/reset-password/${token}`,
+            `${API_URL}/api/auth/reset-password/${token}`,
             {
             method: "POST",
             headers: {

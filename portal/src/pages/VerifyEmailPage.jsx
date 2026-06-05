@@ -4,6 +4,8 @@ import { useParams, Link } from "react-router-dom";
 export default function VerifyEmailPage() {
   const { token } = useParams();
 
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
   const [verified, setVerified] =
     useState(false);
 
@@ -11,7 +13,7 @@ export default function VerifyEmailPage() {
     const verify = async () => {
       const response =
         await fetch(
-          `http://localhost:5000/api/auth/verify-email/${token}`
+          `${API_URL}/api/auth/verify-email/${token}`
         );
 
       if (response.ok) {

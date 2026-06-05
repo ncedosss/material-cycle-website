@@ -242,6 +242,7 @@ export default function ServicesRequestedPage() {
   const [requests, setRequests] = useState([]);
   const [search, setSearch]     = useState("");
   const [status, setStatus]     = useState("");
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   useEffect(() => { loadRequests(); }, []);
   useEffect(() => { loadRequests(); }, [search, status]);
@@ -249,7 +250,7 @@ export default function ServicesRequestedPage() {
   const loadRequests = async () => {
     const token = localStorage.getItem("token");
     const response = await fetch(
-      `http://localhost:5000/api/service-requests?search=${search}&status=${status}`,
+      `${API_URL}/api/service-requests?search=${search}&status=${status}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
     const data = await response.json();

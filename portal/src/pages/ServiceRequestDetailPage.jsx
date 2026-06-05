@@ -304,12 +304,13 @@ function getStepState(request, stepKey) {
 export default function ServiceRequestDetailPage() {
   const { id } = useParams();
   const [request, setRequest] = useState(null);
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   useEffect(() => { loadRequest(); }, []);
 
   const loadRequest = async () => {
     const token = localStorage.getItem("token");
-    const response = await fetch(`http://localhost:5000/api/service-requests/${id}`, {
+    const response = await fetch(`${API_URL}/api/service-requests/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await response.json();
