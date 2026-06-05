@@ -6,9 +6,9 @@ const jwt = require("jsonwebtoken");
 const transporter = require("../utils/email");
 
 const router = express.Router();
+const API_URL = process.env.VITE_API_URL || "http://localhost:5000";
 
 router.post("/register", async (req, res) => {
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
   try {
     const {
       firstName,
@@ -186,7 +186,6 @@ router.get("/verify-email/:token",async (req, res) => {
   }
 );
 router.post("/forgot-password",async (req, res) => {
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
     try {
       const { email } = req.body;
 
