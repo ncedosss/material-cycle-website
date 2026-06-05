@@ -123,7 +123,6 @@ router.post("/login", async (req, res) => {
         message: "Invalid email or password"
       });
     }
-console.log('User: ',user);
     if (!user.rows[0].email_verified) {
       return res.status(401).json({
         message: "Please verify your email address before logging in."
