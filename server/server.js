@@ -18,6 +18,12 @@ app.use("/api/test", testRoutes);
 app.use("/api/dashboard", require("./routes/dashboard"));
 app.use("/api/service-requests", require("./routes/service-requests"));
 app.use("/uploads", express.static("uploads"));
+
+app.use("/portal", express.static(path.join(__dirname, "../portal/dist")));
+app.get("/portal/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../portal/dist/index.html"));
+});
+
 app.use(
   express.static(
     path.join(__dirname, "../material-cycle/dist")
