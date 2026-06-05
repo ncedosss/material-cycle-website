@@ -20,7 +20,7 @@ app.use("/api/service-requests", require("./routes/service-requests"));
 app.use("/uploads", express.static("uploads"));
 
 app.use("/portal", express.static(path.join(__dirname, "../portal/dist")));
-app.get("/portal/*", (req, res) => {
+app.get("/portal/*path", (req, res) => {
   res.sendFile(path.join(__dirname, "../portal/dist/index.html"));
 });
 
