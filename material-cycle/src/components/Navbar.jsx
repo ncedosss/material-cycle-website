@@ -3,6 +3,7 @@ import logo from "../assets/favicon.ico";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const API_URL = import.meta.env.VITE_API_URL
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
@@ -48,7 +49,7 @@ export default function Navbar() {
         {/* Desktop Buttons */}
         <div className="hidden md:flex items-center gap-4">
         <a
-          href="http://localhost:5174"
+          href={`${API_URL}/portal`}
           className="
             border border-green-600
             text-green-700
