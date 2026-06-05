@@ -47,20 +47,20 @@ export default function Navbar() {
 
         {/* Desktop Buttons */}
         <div className="hidden md:flex items-center gap-4">
-          <button
-            disabled
-            className="
-              border border-green-600
-              text-green-700
-              px-5 py-2
-              rounded-xl
-              font-medium
-              opacity-60
-              cursor-not-allowed
-            "
-          >
-            Client Portal (Coming Soon)
-          </button>
+        <a
+          href="http://localhost:5174"
+          className="
+            border border-green-600
+            text-green-700
+            hover:bg-green-50
+            transition-all
+            px-5 py-2
+            rounded-xl
+            font-medium
+          "
+        >
+          Client Portal
+        </a>
 
           <a
             href="#quote"
@@ -133,7 +133,6 @@ export default function Navbar() {
             </a>
 
             <button
-              disabled
               className="
                 w-full
                 border border-green-600
@@ -145,7 +144,7 @@ export default function Navbar() {
                 cursor-not-allowed
               "
             >
-              Client Portal (Coming Soon)
+              Client Portal
             </button>
 
             <a

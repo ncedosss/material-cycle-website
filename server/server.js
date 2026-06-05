@@ -15,7 +15,9 @@ app.use(express.json());
 app.use("/api/contact", contactRoute);
 app.use("/api/auth",authRoutes);
 app.use("/api/test", testRoutes);
-
+app.use("/api/dashboard", require("./routes/dashboard"));
+app.use("/api/service-requests", require("./routes/service-requests"));
+app.use("/uploads", express.static("uploads"));
 app.use(
   express.static(
     path.join(__dirname, "../material-cycle/dist")

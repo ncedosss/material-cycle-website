@@ -1,6 +1,7 @@
 const express = require("express");
 const nodemailer = require("nodemailer");
 const pool = require("../utils/db");
+const { buildConsultationEmail } = require('./emailTemplate');
 
 const router = express.Router();
 
@@ -52,23 +53,9 @@ router.post("/", async (req, res) => {
 
     await transporter.sendMail({
       from: process.env.SMTP_USER,
-      to: "NcedoM@ebuhlantidevs.co.za,grootboomunathi@gmail.com",
-      subject: "Material Cycle Consultation Request",
-      html: `
-        <h2>New Consultation Request</h2>
-
-        <p><b>Full Name:</b> ${fullName}</p>
-        <p><b>Company:</b> ${companyName}</p>
-        <p><b>Email:</b> ${email}</p>
-        <p><b>Phone:</b> ${phone}</p>
-        <p><b>Service:</b> ${service}</p>
-        <p><b>Location:</b> ${location}</p>
-
-        <hr/>
-
-        <p><b>Requirements:</b></p>
-        <p>${message}</p>
-      `
+      to: "NcedoM@ebuhlantidevs.co.za,masixolem@ebuhlantidevs.co.za",
+      subject: `Consultation Request — ${fullName}`,
+      html: buildConsultationEmail({ fullName, companyName, email, phone, service, location, message })
     });
 
     res.json({

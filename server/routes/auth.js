@@ -274,7 +274,7 @@ router.post("/reset-password/:token",async (req, res) => {
         await pool.query(
           `
           SELECT *
-          FROM mc."users"
+          FROM users
           WHERE reset_token = $1
           `,
           [token]
@@ -297,7 +297,7 @@ router.post("/reset-password/:token",async (req, res) => {
 
       await pool.query(
         `
-        UPDATE mc."users"
+        UPDATE users
         SET
           password_hash = $1,
           reset_token = null,
