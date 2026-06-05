@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "start": "node server/server.js",
-    "heroku-postbuild": "cd material-cycle && npm install && npm run build"
+    "heroku-postbuild": "cd material-cycle && npm install && npm run build && cd ../portal && npm install && npm run build"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
