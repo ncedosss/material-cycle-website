@@ -413,7 +413,7 @@ export default function ServiceRequestDetailPage() {
                   </div>
                   <div style={{ padding: "20px 28px" }}>
                     <a
-                      href={`http://localhost:5000/${request.msds_document}`}
+                      href={`${API_URL}/api/${request.msds_document}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="msds-link"
