@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const transporter = require("../utils/email");
 
 const router = express.Router();
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 router.post("/register", async (req, res) => {
   try {
@@ -55,7 +56,7 @@ router.post("/register", async (req, res) => {
         verificationToken
       ]
     );
-    const verificationLink = `http://localhost:5173/verify-email/${verificationToken}`;
+    const verificationLink = `${API_URL}/api/auth/verify-email/${verificationToken}`;
 
     await transporter.sendMail({
     from: process.env.SMTP_USER,
@@ -224,7 +225,7 @@ router.post("/forgot-password",async (req, res) => {
         ]
       );
 
-      const resetLink = `http://localhost:5173/reset-password/${token}`;
+      const resetLink = `${API_URL}/api/auth/reset-password/${token}`;
 
       await transporter.sendMail({
         from: process.env.SMTP_USER,
