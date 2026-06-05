@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
     const navigate = useNavigate();
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -21,7 +22,7 @@ export default function LoginPage() {
         setError("");
 
         const response = await fetch(
-        "http://localhost:5000/api/auth/login",
+        `${API_URL}/api/auth/login`,
         {
             method: "POST",
             headers: {
