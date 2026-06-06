@@ -49,7 +49,7 @@ export default function Navbar() {
         {/* Desktop Buttons */}
         <div className="hidden md:flex items-center gap-4">
         <a
-          href={`${API_URL}/portal`}
+          href="#"//{`${API_URL}/portal`}
           className="
             border border-green-600
             text-green-700
