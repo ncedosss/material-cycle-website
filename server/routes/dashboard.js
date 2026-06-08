@@ -22,10 +22,10 @@ router.get("/summary", authMiddleware, async (req, res) => {
     `,[userId]);
     const manifestsCreated = await pool.query(`
       SELECT COUNT(*)
-      FROM manifests
-      WHERE id = $1
+      FROM manifests m
+      JOIN mc."users" u ON u.id = m.customer_id
+      WHERE u.id = $1
     `,[userId]);
-console.log("Manifests Created Count:", manifestsCreated.rows[0].count);
 
     const recentRequests = await pool.query(`
       SELECT
