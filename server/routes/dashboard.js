@@ -7,7 +7,6 @@ const router = express.Router();
 router.get("/summary", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.userId;
-    console.log("User ID from token:", req.user);
     const pendingRequests = await pool.query(`
       SELECT COUNT(*)
       FROM service_requests
