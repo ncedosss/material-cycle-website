@@ -8,6 +8,7 @@ const router = express.Router();
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.userId;
+    console.log("User ID from token:", userId);
     const {
       search,
       status
