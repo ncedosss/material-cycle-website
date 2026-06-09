@@ -66,64 +66,49 @@ router.get("/", authMiddleware, async (req, res) => {
     });
   }
 });
-router.get("/admin",authMiddleware, async (req, res) => {
+router.get("/admin", authMiddleware, async (req, res) => {
   try {
-
     const { search, status } = req.query;
-
-    let sql = `
-    SELECT
-      sr.*,
-      JSON_AGG(
-        JSON_BUILD_OBJECT(
-          'item_key', ci.item_key,
-          'result',   ci.result,
-          'comment',  ci.comment
-        )
-      ) FILTER (WHERE ci.id IS NOT NULL) AS checklist_items
-    FROM service_requests sr
-    LEFT JOIN service_request_checklist_items ci ON ci.service_request_id = sr.id
-    GROUP BY sr.id
-    `;
-
     const params = [];
+    const conditions = [];
 
     if (search) {
       params.push(`%${search}%`);
-
-      sql += `
-        AND request_number ILIKE
-        $${params.length}
-      `;
+      conditions.push(`sr.request_number ILIKE $${params.length}`);
     }
 
     if (status) {
       params.push(status);
-
-      sql += `
-        AND status =
-        $${params.length}
-      `;
+      conditions.push(`sr.status = $${params.length}`);
     }
 
-    sql += `
-      ORDER BY created_at DESC
+    const whereClause = conditions.length > 0
+      ? `WHERE ${conditions.join(' AND ')}`
+      : '';
+
+    const sql = `
+      SELECT
+        sr.*,
+        JSON_AGG(
+          JSON_BUILD_OBJECT(
+            'item_key', ci.item_key,
+            'result',   ci.result,
+            'comment',  ci.comment
+          )
+        ) FILTER (WHERE ci.id IS NOT NULL) AS checklist_items
+      FROM service_requests sr
+      LEFT JOIN service_request_checklist_items ci ON ci.service_request_id = sr.id
+      ${whereClause}
+      GROUP BY sr.id
+      ORDER BY sr.created_at DESC
     `;
 
-    const result =
-      await pool.query(
-        sql,
-        params
-      );
-
+    const result = await pool.query(sql, params);
     res.json(result.rows);
 
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: "Server Error"
-    });
+    res.status(500).json({ message: "Server Error" });
   }
 });
 router.get("/:id", authMiddleware, async (req, res) => {
