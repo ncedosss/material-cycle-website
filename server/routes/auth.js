@@ -224,7 +224,7 @@ router.post("/forgot-password",async (req, res) => {
         ]
       );
 
-      const resetLink = `${API_URL}/api/auth/reset-password/${token}`;
+      const resetLink = `${API_URL}/portal/reset-password/${token}`;
 
       await transporter.sendMail({
         from: process.env.SMTP_USER,
