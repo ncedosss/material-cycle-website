@@ -349,10 +349,8 @@ export default function CreateServiceRequestPage() {
   const validatePhone = (value) => {
     const digits = value.replace(/\D/g, "");
     if (!value.trim()) return "Contact number is required.";
-    if (digits.length < 10) return "Must be at least 10 digits.";
-    if (digits.length > 15) return "Too long — max 15 digits.";
-    // Accept formats: 0xxxxxxxxx, +27xxxxxxxxx, international with country code
-    if (!/^[+]?[0-9\s\-()]{10,}$/.test(value.trim())) return "Invalid phone number format.";
+    if (digits.length !== 10) return "Must be exactly 10 digits.";
+    if (!/^0[0-9]{9}$/.test(digits)) return "Must start with 0 (e.g. 0731234567).";
     return "";
   };
 
