@@ -373,7 +373,7 @@ export default function CreateServiceRequestPage() {
 
   // Required fields (MSDS excluded)
   const REQUIRED_FIELDS = [
-    "vehicleRegistration", "driverName", "wirNumber", "eta",
+    "vehicleRegistration", "driverName", "eta",
     "wasteType", "wasteForm", "volume", "disposalReason",
     "customerName", "contactNumber",
     "signature", "declarationDate",
