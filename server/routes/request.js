@@ -53,7 +53,7 @@ router.post("/", async (req, res) => {
 
     await transporter.sendMail({
       from: process.env.SMTP_USER,
-      to: "NcedoM@ebuhlantidevs.co.za,masixolem@ebuhlantidevs.co.za",
+      to: "NcedoM@ebuhlantidevs.co.za,unathi@materialcycle.co.za,thandolwethu@materialcycle.co.za,thembekile@materialcycle.co.za",
       subject: `Consultation Request — ${fullName}`,
       html: buildConsultationEmail({ fullName, companyName, email, phone, service, location, message })
     });
