@@ -16,7 +16,7 @@ router.get("/summary", authMiddleware, async (req, res) => {
     const approvedRequests = await pool.query(`
       SELECT COUNT(*)
       FROM service_requests
-      WHERE status = 'Approved'
+      WHERE status = 'Accepted'
       AND customer_id = $1
     `,[userId]);
     const manifestsCreated = await pool.query(`
