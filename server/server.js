@@ -16,14 +16,6 @@ app.use(cors({
   ],
   credentials: true,
 }));
-
-app.options('*', cors({
-  origin: [
-    'https://waste-manifest-app-6a2146567071.herokuapp.com',
-    'https://portal.material-cycle.com',
-  ],
-  credentials: true,
-}));
 app.use(express.json());
 
 app.use("/api/contact", contactRoute);
