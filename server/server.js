@@ -9,7 +9,21 @@ const path = require("path");
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://waste-manifest-app-6a2146567071.herokuapp.com',
+    'https://portal.material-cycle.com',
+  ],
+  credentials: true,
+}));
+
+app.options('*', cors({
+  origin: [
+    'https://waste-manifest-app-6a2146567071.herokuapp.com',
+    'https://portal.material-cycle.com',
+  ],
+  credentials: true,
+}));
 app.use(express.json());
 
 app.use("/api/contact", contactRoute);
