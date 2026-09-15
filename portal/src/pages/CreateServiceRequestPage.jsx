@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import PortalLayout from "../layouts/PortalLayout";
+import WasteVerificationForm, { EMPTY_FORM } from "../components/WasteVerificationForm";
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap');
@@ -336,7 +337,6 @@ export default function CreateServiceRequestPage() {
     wirNumber: "",
     wasteType: "",
     wasteForm: "",
-    volume: "",
     eta: "",
     disposalReason: "",
     signature: "",
@@ -372,7 +372,7 @@ export default function CreateServiceRequestPage() {
   // Required fields (MSDS excluded)
   const REQUIRED_FIELDS = [
     "vehicleRegistration", "driverName", "eta",
-    "wasteType", "wasteForm", "volume", "disposalReason",
+    "wasteType", "wasteForm", "disposalReason",
     "customerName", "contactNumber",
     "signature", "declarationDate",
   ];
@@ -389,7 +389,11 @@ export default function CreateServiceRequestPage() {
     setSubmitting(true);
     const token = localStorage.getItem("token");
     const form = new FormData();
-    Object.entries(formData).forEach(([key, value]) => form.append(key, value));
+    Object.entries(formData).forEach(([key, value]) => {
+      if (key === "wasteStreams" || key === "checklistComments") return;
+      form.append(key, value ?? "");
+    });
+    form.append("wasteStreams", JSON.stringify(formData.wasteStreams));
     if (msdsFile) form.append("msdsFile", msdsFile);
     const response = await fetch(`${API_URL}/api/service-requests`, {
       method: "POST",
@@ -401,262 +405,16 @@ export default function CreateServiceRequestPage() {
   };
 
   return (
-    <>
-      <style>{styles}</style>
-      <PortalLayout title="New Service Request" subtitle="Complete the Waste Verification Form to submit a new request.">
-
-        <form onSubmit={handleSubmit}>
-          <div className="form-card">
-
-            {/* Section 1 — Vehicle & Driver */}
-            <div className="form-section">
-              <div className="section-header">
-                <div className="section-num">1</div>
-                <div>
-                  <div className="section-title">Vehicle & Driver</div>
-                  <div className="section-sub">Details of the vehicle and driver assigned to this collection.</div>
-                </div>
-              </div>
-              <div className="form-grid">
-                <div className="field-wrap">
-                  <label className="field-label">Vehicle Registration</label>
-                  <input className="field-input" name="vehicleRegistration" placeholder="e.g. CA 123-456" value={formData.vehicleRegistration} onChange={handleChange} />
-                </div>
-                <div className="field-wrap">
-                  <label className="field-label">Driver Name</label>
-                  <input className="field-input" name="driverName" placeholder="Full name" value={formData.driverName} onChange={handleChange} />
-                </div>
-                <div className="field-wrap">
-                  <label className="field-label">WIR Number</label>
-                  <input className="field-input" name="wirNumber" placeholder="WIR reference" value={formData.wirNumber} onChange={handleChange} />
-                </div>
-                <div className="field-wrap">
-                  <label className="field-label">Estimated Time of Arrival</label>
-                  <div className="date-field-wrap" onClick={() => etaRef.current?.showPicker()}>
-                    <input
-                      ref={etaRef}
-                      type="datetime-local"
-                      name="eta"
-                      value={formData.eta}
-                      onChange={handleChange}
-                      className="field-input"
-                      style={{ cursor: "pointer" }}
-                    />
-                    <span className="date-icon">
-                      <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
-                      </svg>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Section 2 — Waste Details */}
-            <div className="form-section">
-              <div className="section-header">
-                <div className="section-num">2</div>
-                <div>
-                  <div className="section-title">Waste Details</div>
-                  <div className="section-sub">Classification and volume of the waste being disposed.</div>
-                </div>
-              </div>
-              <div className="form-grid">
-                <div className="field-wrap">
-                  <label className="field-label">Waste Type</label>
-                  <select className="field-select" name="wasteType" value={formData.wasteType} onChange={handleChange}>
-                    <option value="">Select waste type</option>
-                    <option value="Hazardous">Hazardous</option>
-                    <option value="Non-Hazardous">Non-Hazardous</option>
-                    <option value="Recyclable">Recyclable</option>
-                  </select>
-                </div>
-                <div className="field-wrap">
-                  <label className="field-label">Waste Form</label>
-                  <select className="field-select" name="wasteForm" value={formData.wasteForm} onChange={handleChange}>
-                    <option value="">Select waste form</option>
-                    <option value="Solid">Solid</option>
-                    <option value="Sludge">Sludge</option>
-                    <option value="Liquid">Liquid</option>
-                  </select>
-                </div>
-                <div className="field-wrap">
-                  <label className="field-label">Volume</label>
-                  <input type="number" className="field-input" name="volume" placeholder="e.g. 500" value={formData.volume} onChange={handleChange} />
-                </div>
-              </div>
-              <div style={{ marginTop: "16px" }}>
-                <div className="field-wrap">
-                  <label className="field-label">Reason for Disposal</label>
-                  <textarea
-                    className="field-textarea"
-                    name="disposalReason"
-                    placeholder="Describe the reason this waste is being disposed of..."
-                    value={formData.disposalReason}
-                    onChange={handleChange}
-                    rows={4}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Section 3 — MSDS */}
-            <div className="form-section">
-              <div className="section-header">
-                <div className="section-num">3</div>
-                <div>
-                  <div className="section-title">Safety Data Sheet</div>
-                  <div className="section-sub">Upload the Material Safety Data Sheet (MSDS) for this waste.</div>
-                </div>
-              </div>
-              <div className={`file-upload-area ${msdsFile ? "has-file" : ""}`}>
-                <input
-                  type="file"
-                  accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
-                  onChange={(e) => setMsdsFile(e.target.files[0])}
-                />
-                <div className="file-icon">
-                  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                    <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
-                  </svg>
-                </div>
-                {msdsFile ? (
-                  <>
-                    <div className="file-upload-title">File selected</div>
-                    <div className="file-name">{msdsFile.name}</div>
-                  </>
-                ) : (
-                  <>
-                    <div className="file-upload-title">Click or drag to upload MSDS</div>
-                    <div className="file-upload-sub">PDF, DOC, DOCX, PNG, JPG accepted</div>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* Section 4 — Contact */}
-            <div className="form-section">
-              <div className="section-header">
-                <div className="section-num">4</div>
-                <div>
-                  <div className="section-title">Contact Information</div>
-                  <div className="section-sub">Primary contact for this service request.</div>
-                </div>
-              </div>
-              <div className="form-grid">
-                <div className="field-wrap">
-                  <label className="field-label">Customer Name</label>
-                  <input className="field-input" name="customerName" placeholder="Full name" value={formData.customerName} onChange={handleChange} />
-                </div>
-                <div className="field-wrap">
-                  <label className="field-label">
-                    Contact Number<span className="required-star">*</span>
-                  </label>
-                  <input
-                    className={`field-input ${touched.contactNumber && contactNumberError ? "error" : ""}`}
-                    name="contactNumber"
-                    placeholder="+27 00 000 0000"
-                    value={formData.contactNumber}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                  />
-                  {touched.contactNumber && contactNumberError
-                    ? <span className="field-error-msg">
-                        <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-                        {contactNumberError}
-                      </span>
-                    : <span className="field-hint">e.g. 0731234567 or +27 73 123 4567</span>
-                  }
-                </div>
-              </div>
-            </div>
-
-            {/* Section 5 — Declaration */}
-            <div className="form-section">
-              <div className="section-header">
-                <div className="section-num">5</div>
-                <div>
-                  <div className="section-title">Declaration</div>
-                  <div className="section-sub">By signing, you confirm that the information provided is accurate.</div>
-                </div>
-              </div>
-              <div className="declaration-box">
-                I declare that the information provided in this Waste Verification Form is true and accurate to the best of my knowledge. I understand that providing false information may result in legal consequences.
-              </div>
-              <div className="form-grid">
-                <div className="field-wrap">
-                  <label className="field-label">Electronic Signature</label>
-                  <input
-                    className={`field-input sig-input`}
-                    name="signature"
-                    placeholder="Type your full name"
-                    value={formData.signature}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="field-wrap">
-                  <label className="field-label">Declaration Date</label>
-                  <div className="date-field-wrap" onClick={() => declarationDateRef.current?.showPicker()}>
-                    <input
-                      ref={declarationDateRef}
-                      type="date"
-                      name="declarationDate"
-                      value={formData.declarationDate}
-                      onChange={handleChange}
-                      className="field-input"
-                      style={{ cursor: "pointer" }}
-                    />
-                    <span className="date-icon">
-                      <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
-                      </svg>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          <div className="form-actions">
-            {/* Progress indicator */}
-            <div className="form-progress-wrap">
-              <div className={`form-progress-label ${isFormValid ? "ready" : ""}`}>
-                {isFormValid ? "Ready to submit" : `${filledCount} of ${totalRequired} fields complete`}
-              </div>
-              <div className="form-progress-track">
-                <div
-                  className={`form-progress-fill ${isFormValid ? "complete" : "partial"}`}
-                  style={{ width: `${Math.round((filledCount / totalRequired) * 100)}%` }}
-                />
-              </div>
-            </div>
-            <button type="button" className="cancel-btn" onClick={() => navigate("/services")}>
-              Cancel
-            </button>
-            <button type="submit" className="submit-btn" disabled={submitting || !isFormValid} title={!isFormValid ? "Please complete all required fields" : ""}>
-              {submitting ? (
-                <>
-                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" style={{ animation: "spin 1s linear infinite" }}>
-                    <path d="M12 2a10 10 0 0110 10"/>
-                  </svg>
-                  Submitting…
-                </>
-              ) : (
-                <>
-                  Submit Request
-                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                  </svg>
-                </>
-              )}
-            </button>
-          </div>
-        </form>
-
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-      </PortalLayout>
-    </>
+    <PortalLayout title="Waste Verification Form" subtitle="SOP0012/14-1 — complete Section A and submit.">
+      <WasteVerificationForm
+        mode="customer"
+        data={formData}
+        onChange={(patch) => setFormData(prev => ({ ...prev, ...patch }))}
+        msdsFile={msdsFile}
+        onMsdsChange={setMsdsFile}
+        onSubmit={handleSubmit}
+        submitting={submitting}
+      />
+    </PortalLayout>
   );
 }

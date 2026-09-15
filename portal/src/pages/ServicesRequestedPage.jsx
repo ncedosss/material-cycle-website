@@ -329,7 +329,13 @@ export default function ServicesRequestedPage() {
                     <tr key={request.id}>
                       <td><span className="req-number">{request.request_number}</span></td>
                       <td><span className="waste-badge">{request.waste_type}</span></td>
-                      <td><span className="vol-text">{request.volume}</span></td>
+                      <td>
+                        <span className="vol-text">
+                          {request.waste_streams?.length
+                            ? `${request.waste_streams.length} stream${request.waste_streams.length > 1 ? "s" : ""}`
+                            : "—"}
+                        </span>
+                      </td>
                       <td>
                         <span className={`status-pill ${sc}`}>
                           <span className="status-dot" />

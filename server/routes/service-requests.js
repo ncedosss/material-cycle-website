@@ -86,16 +86,28 @@ router.get("/admin", authMiddleware, async (req, res) => {
       ? `WHERE ${conditions.join(' AND ')}`
       : '';
 
-    const sql = `
+      const sql = `
       SELECT
         sr.*,
+        TO_CHAR(sr.eta, 'HH24:MI') AS eta_time,
         JSON_AGG(
           JSON_BUILD_OBJECT(
             'item_key', ci.item_key,
             'result',   ci.result,
             'comment',  ci.comment
           )
-        ) FILTER (WHERE ci.id IS NOT NULL) AS checklist_items
+        ) FILTER (WHERE ci.id IS NOT NULL) AS checklist_items,
+        COALESCE(
+          (SELECT JSON_AGG(
+                    JSON_BUILD_OBJECT(
+                      'line_no',     w.line_no,
+                      'description', w.description,
+                      'volume',      w.volume
+                    ) ORDER BY w.line_no)
+             FROM service_request_waste_streams w
+            WHERE w.service_request_id = sr.id),
+          '[]'::json
+        ) AS waste_streams
       FROM service_requests sr
       LEFT JOIN service_request_checklist_items ci ON ci.service_request_id = sr.id
       ${whereClause}
@@ -118,9 +130,33 @@ router.get("/:id", authMiddleware, async (req, res) => {
     const request =
       await pool.query(
         `
-        SELECT *
-        FROM service_requests
-        WHERE id = $1
+        SELECT
+          sr.*,
+          TO_CHAR(sr.eta, 'HH24:MI') AS eta_time,
+          COALESCE(
+            (SELECT JSON_AGG(
+                      JSON_BUILD_OBJECT(
+                        'item_key', ci.item_key,
+                        'result',   ci.result,
+                        'comment',  ci.comment
+                      ))
+               FROM service_request_checklist_items ci
+              WHERE ci.service_request_id = sr.id),
+            '[]'::json
+          ) AS checklist_items,
+          COALESCE(
+            (SELECT JSON_AGG(
+                      JSON_BUILD_OBJECT(
+                        'line_no',     w.line_no,
+                        'description', w.description,
+                        'volume',      w.volume
+                      ) ORDER BY w.line_no)
+               FROM service_request_waste_streams w
+              WHERE w.service_request_id = sr.id),
+            '[]'::json
+          ) AS waste_streams
+        FROM service_requests sr
+        WHERE sr.id = $1
         `,
         [id]
       );
@@ -158,14 +194,15 @@ router.post("/", authMiddleware, upload.single("msdsFile"), async (req, res) => 
     const msdsDocument = req.file ? req.file.path : null;
 
     const {
-      customerName,
+      generatorName, deliveryOrCollection, requestDate, poReferenceNumber,
+      msdsAttached, sampleRequired, compatibilityRequired, specialInstructions,
+      wasteStreams, customerName,
       contactNumber,
       vehicleRegistration,
       driverName,
       wirNumber,
       wasteType,
       wasteForm,
-      volume,
       disposalReason,
       signature,
       declarationDate,
@@ -184,7 +221,6 @@ router.post("/", authMiddleware, upload.single("msdsFile"), async (req, res) => 
           request_number,
           waste_type,
           waste_form,
-          volume,
           disposal_reason,
           signature,
           declaration_date,
@@ -208,15 +244,14 @@ router.post("/", authMiddleware, upload.single("msdsFile"), async (req, res) => 
           $6,
           $7,
           $8,
-          $9,
           'Pending',
           NOW(),
+          $9,
           $10,
           $11,
           $12,
           $13,
-          $14,
-          $15
+          $14
         )
         RETURNING *
         `,
@@ -225,11 +260,10 @@ router.post("/", authMiddleware, upload.single("msdsFile"), async (req, res) => 
           requestNumber,
           wasteType,
           wasteForm,
-          volume,
           disposalReason,
           signature,
           declarationDate,
-          eta,
+          toTimestamp(requestDate, eta),
           customerName,
           contactNumber,
           vehicleRegistration,
@@ -238,6 +272,33 @@ router.post("/", authMiddleware, upload.single("msdsFile"), async (req, res) => 
           msdsDocument
         ]
       );
+
+    const newId = result.rows[0].id;
+
+    await pool.query(
+      `UPDATE service_requests SET
+        generator_name = $1, delivery_or_collection = $2, request_date = $3,
+        po_reference_number = $4, msds_attached = $5, sample_required = $6,
+        compatibility_required = $7, special_instructions = $8
+      WHERE id = $9`,
+      [generatorName, deliveryOrCollection, requestDate || null, poReferenceNumber,
+      msdsAttached === "Yes", sampleRequired === "Yes",
+      compatibilityRequired === "Yes", specialInstructions, newId]
+    );
+
+    const lines = JSON.parse(wasteStreams || "[]");
+    for (let i = 0; i < lines.length; i++) {
+      const { description = "", volume = "" } = lines[i] || {};
+      if (!description.trim() && !volume.trim()) continue;
+      await pool.query(
+        `INSERT INTO service_request_waste_streams
+          (service_request_id, line_no, description, volume)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (service_request_id, line_no)
+        DO UPDATE SET description = EXCLUDED.description, volume = EXCLUDED.volume`,
+        [newId, i + 1, description, volume]
+      );
+    }
 
     res.status(201).json(
       result.rows[0]
@@ -252,5 +313,13 @@ router.post("/", authMiddleware, upload.single("msdsFile"), async (req, res) => 
     });
   }
 });
+// <input type="time"> yields "HH:mm"; the eta column is a timestamp,
+// so anchor the time to the form's Date row.
+const toTimestamp = (dateStr, timeStr) => {
+  if (!timeStr) return null;
+  const day = dateStr || new Date().toISOString().split("T")[0];
+  const time = timeStr.length === 5 ? `${timeStr}:00` : timeStr;
+  return `${day} ${time}`;
+};
 
 module.exports = router;

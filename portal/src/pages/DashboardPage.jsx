@@ -230,7 +230,7 @@ function getStatusClass(status) {
 }
 
 export default function DashboardPage() {
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5174";
   const [summary, setSummary] = useState({
     pendingRequests: 0,
     approvedRequests: 0,

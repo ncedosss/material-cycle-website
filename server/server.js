@@ -9,11 +9,25 @@ const path = require("path");
 
 const app = express();
 
+const allowedOrigins = [
+  'https://waste-manifest-app-6a2146567071.herokuapp.com',
+  'https://portal.material-cycle.com',
+];
+
+if (process.env.NODE_ENV !== 'production') {
+  allowedOrigins.push(
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:5175',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:5174',
+    'http://127.0.0.1:5175'
+  );
+}
+
 app.use(cors({
-  origin: [
-    'https://waste-manifest-app-6a2146567071.herokuapp.com',
-    'https://portal.material-cycle.com',
-  ],
+  origin: allowedOrigins,
   credentials: true,
 }));
 app.use(express.json());

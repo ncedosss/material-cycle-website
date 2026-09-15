@@ -336,7 +336,6 @@ export default function ServiceRequestDetailPage() {
     )},
     { label: "Waste Type", value: request.waste_type },
     { label: "Waste Form", value: request.waste_form || "—" },
-    { label: "Volume", value: request.volume },
     { label: "WIR Number", value: request.wir_number || "—" },
     { label: "Driver", value: request.driver_name || "—" },
     { label: "Vehicle", value: request.vehicle_registration || "—" },
