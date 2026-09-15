@@ -337,6 +337,22 @@ function Tick({ label, name, value, current, onPick, locked }) {
   );
 }
 
+  /* Native date/time inputs only open their picker from the icon.
+    showPicker() opens it from anywhere in the field. */
+  const openPicker = (e) => {
+    if (e.currentTarget.readOnly || e.currentTarget.disabled) return;
+    try {
+      e.currentTarget.showPicker?.();
+    } catch {
+      /* Firefox and older Safari throw or no-op — the field stays typable. */
+    }
+  };
+
+  /* 0731234567 | +27731234567 | 0027731234567, spaces and dashes ignored */
+  const ZA_PHONE = /^(?:\+?27|0027|0)[1-8][0-9]{8}$/;
+
+  const phoneValid = (v) => ZA_PHONE.test(String(v || "").replace(/[\s()-]/g, ""));
+
 export default function WasteVerificationForm({
   mode = "customer",
   data,
@@ -397,22 +413,6 @@ export default function WasteVerificationForm({
 
   const A = { "data-locked": lockA || undefined };
   const B = { "data-locked": lockB || undefined };
-
-  /* Native date/time inputs only open their picker from the icon.
-    showPicker() opens it from anywhere in the field. */
-  const openPicker = (e) => {
-    if (e.currentTarget.readOnly || e.currentTarget.disabled) return;
-    try {
-      e.currentTarget.showPicker?.();
-    } catch {
-      /* Firefox and older Safari throw or no-op — the field stays typable. */
-    }
-  };
-
-  /* 0731234567 | +27731234567 | 0027731234567, spaces and dashes ignored */
-  const ZA_PHONE = /^(?:\+?27|0027|0)[1-8][0-9]{8}$/;
-
-  const phoneValid = (v) => ZA_PHONE.test(String(v || "").replace(/[\s()-]/g, ""));
 
   return (
     <div className="wvf">
